@@ -1,0 +1,54 @@
+import type { ChatResponse } from "../types/chat";
+
+const API_BASE = "http://localhost:8080";
+
+export async function sendChat(body: Record<string, unknown>): Promise<ChatResponse> {
+  const res = await fetch(`${API_BASE}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function streamChat(
+  body: Record<string, unknown>,
+  onToken: (token: string) => void
+): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/chat/stream`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok || !res.body) {
+    throw new Error(await res.text());
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split("\n\n");
+    buffer = parts.pop() || "";
+
+    for (const part of parts) {
+      if (!part.startsWith("data: ")) continue;
+      const payload = JSON.parse(part.slice(6));
+
+      if (payload.type === "token") {
+        onToken(payload.content);
+      }
+    }
+  }
+}
