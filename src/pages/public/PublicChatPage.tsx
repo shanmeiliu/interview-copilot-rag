@@ -13,10 +13,10 @@ function makeId() {
 }
 
 const suggestedQuestions = [
-  "Summarize this candidate's background",
+  "Can you summarize Charmaine's background?",
   "What experience does she have with AI systems?",
   "What are her strongest backend skills?",
-  "Can you explain her RAG project?",
+  "Can you explain one of her projects?",
   "What roles is she best suited for?",
 ];
 
@@ -25,12 +25,13 @@ export default function PublicChatPage() {
   const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState<RetrievedDoc[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([
-  {
-    id: makeId(),
-    role: "assistant",
-    content:
-      "I am Charmaine Cat, Charmaine's personal assistant. I can answer questions about her background, technical experience, projects, and role fit using information from her resume, GitHub repositories, and supporting materials.",
-  },
+    {
+      id: makeId(),
+      role: "assistant",
+      name: "Charmaine Cat",
+      content:
+        "I am Charmaine Cat, Charmaine's personal assistant. I can answer questions about her background, technical experience, projects, and role fit using information from her resume, GitHub repositories, and supporting materials.",
+    },
   ]);
 
   const [sources, setSources] = useState<SourceFilter[]>([
@@ -65,7 +66,7 @@ export default function PublicChatPage() {
     setMessages((prev) => [
       ...prev,
       userMessage,
-      { id: assistantId, role: "assistant", content: "" },
+      { id: assistantId, role: "assistant", name: "Charmaine Cat", content: "" },
     ]);
 
     try {
@@ -112,17 +113,20 @@ export default function PublicChatPage() {
   }
 
   return (
-    <PublicChatLayout>
+    <PublicChatLayout
+      title="Interview Copilot"
+      subtitle="Ask Charmaine Cat about Charmaine's background, technical experience, projects, and role fit."
+    >
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="flex min-h-0 flex-col rounded-3xl border border-zinc-800 bg-zinc-900/70 backdrop-blur">
-          <div className="border-b border-zinc-800 px-6 py-5">
+        <section className="flex min-h-0 flex-col rounded-[28px] border border-zinc-800 bg-zinc-900/70 shadow-2xl shadow-black/10 backdrop-blur">
+          <div className="border-b border-zinc-800 px-6 py-6">
             <div className="flex flex-col gap-4">
               <div>
-                <div className="text-xl font-semibold tracking-tight">
-                  Candidate Representative Chat
+                <div className="text-2xl font-semibold tracking-tight">
+                  Charmaine Cat
                 </div>
-                <div className="mt-2 text-sm leading-6 text-zinc-400">
-                    Charmaine Cat answers recruiter and interviewer questions on Charmaine's behalf using grounded information from her resume, GitHub projects, and supporting materials.
+                <div className="mt-2 max-w-3xl text-sm leading-6 text-zinc-400">
+                  Charmaine Cat answers recruiter and interviewer questions on Charmaine's behalf using grounded information from her resume, GitHub projects, and supporting materials.
                 </div>
               </div>
 
@@ -136,7 +140,7 @@ export default function PublicChatPage() {
                   <button
                     key={q}
                     onClick={() => void handleSend(q)}
-                    className="rounded-full border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-300 hover:border-zinc-500 hover:text-white"
+                    className="rounded-full border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-500 hover:text-white"
                   >
                     {q}
                   </button>

@@ -15,6 +15,7 @@ export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
+  name?: string;
 }
 
 export interface RetrievedDoc {
