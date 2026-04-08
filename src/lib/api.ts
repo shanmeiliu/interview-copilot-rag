@@ -52,3 +52,39 @@ export async function streamChat(
     }
   }
 }
+
+export async function uploadSourceFile(file: File, sourceType = "document") {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("source_type", sourceType);
+
+  const res = await fetch(`${API_BASE}/api/sources/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function ingestGithubRepo(body: {
+  repo_url: string;
+  branch?: string;
+  include_patterns?: string[];
+  source_type?: string;
+}) {
+  const res = await fetch(`${API_BASE}/api/sources/github`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
