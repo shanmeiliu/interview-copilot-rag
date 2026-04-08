@@ -1,20 +1,27 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import AppShell from "./components/layout/AppShell.tsx";
-import ChatPage from "./components/chat/ChatPage.tsx";
-import KnowledgePage from "./pages/KnowledgePage.tsx";
-import IngestionPage from "./pages/IngestionPage.tsx";
-import SettingsPage from "./pages/SettingsPage.tsx";
+import ProtectedRoute from "./app/ProtectedRoute";
+import PublicChatPage from "./pages/public/PublicChatPage";
+import LoginPage from "./pages/admin/LoginPage";
+import AdminLayout from "./pages/admin/AdminLayout";
+import KnowledgePage from "./pages/admin/KnowledgePage";
+import IngestionPage from "./pages/admin/IngestionPage";
+import SettingsPage from "./pages/admin/SettingsPage";
 
 export default function App() {
   return (
-    <AppShell>
-      <Routes>
-        <Route path="/" element={<Navigate to="/chat/default" replace />} />
-        <Route path="/chat/:id" element={<ChatPage />} />
-        <Route path="/knowledge" element={<KnowledgePage />} />
-        <Route path="/ingestion" element={<IngestionPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-      </Routes>
-    </AppShell>
+    <Routes>
+      <Route path="/" element={<PublicChatPage />} />
+      <Route path="/chat/:id" element={<PublicChatPage />} />
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="/admin/knowledge" replace />} />
+          <Route path="knowledge" element={<KnowledgePage />} />
+          <Route path="ingestion" element={<IngestionPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+      </Route>
+    </Routes>
   );
 }
