@@ -6,6 +6,7 @@ export async function sendChat(body: Record<string, unknown>): Promise<ChatRespo
   const res = await fetch(`${API_BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(body),
   });
 
@@ -23,6 +24,7 @@ export async function streamChat(
   const res = await fetch(`${API_BASE}/api/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(body),
   });
 
@@ -60,6 +62,7 @@ export async function uploadSourceFile(file: File, sourceType = "document") {
 
   const res = await fetch(`${API_BASE}/api/sources/upload`, {
     method: "POST",
+    credentials: "include",
     body: formData,
   });
 
@@ -79,6 +82,22 @@ export async function ingestGithubRepo(body: {
   const res = await fetch(`${API_BASE}/api/sources/github`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function ingestChunks(body: Record<string, unknown>) {
+  const res = await fetch(`${API_BASE}/api/ingest`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(body),
   });
 

@@ -8,67 +8,97 @@ import {
 } from "react";
 
 type AuthUser = {
-  role: "admin";
-  email: string;
+  id: number;
+  username: string;
+  display_name?: string;
+  email?: string | null;
+  role: "admin" | "recruiter";
+  auth_provider: "local" | "google";
 };
 
 type AuthContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  isLoading: boolean;
+  refreshSession: () => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const STORAGE_KEY = "interview-copilot-auth";
+const API_BASE = "http://localhost:8080";
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-
+  async function refreshSession() {
     try {
-      const parsed = JSON.parse(raw) as AuthUser;
-      if (parsed?.role === "admin") {
-        setUser(parsed);
+      const res = await fetch(`${API_BASE}/api/auth/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        setUser(null);
+        return;
       }
+
+      const data = (await res.json()) as { user: AuthUser };
+      setUser(data.user);
     } catch {
-      localStorage.removeItem(STORAGE_KEY);
+      setUser(null);
     }
-  }, []);
-
-  async function login(email: string, password: string) {
-    // Temporary local-only admin auth for frontend scaffold.
-    // Replace with backend auth later.
-    if (!email.trim() || !password.trim()) {
-      throw new Error("Email and password are required.");
-    }
-
-    const nextUser: AuthUser = {
-      role: "admin",
-      email: email.trim(),
-    };
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
-    setUser(nextUser);
   }
 
-  function logout() {
-    localStorage.removeItem(STORAGE_KEY);
-    setUser(null);
+  useEffect(() => {
+    void (async () => {
+      setIsLoading(true);
+      await refreshSession();
+      setIsLoading(false);
+    })();
+  }, []);
+
+  async function login(username: string, password: string) {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+
+    const data = (await res.json()) as { user: AuthUser };
+    setUser(data.user);
+  }
+
+  async function logout() {
+    try {
+      await fetch(`${API_BASE}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setUser(null);
+    }
   }
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       isAuthenticated: !!user,
+      isLoading,
+      refreshSession,
       login,
       logout,
     }),
-    [user]
+    [user, isLoading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

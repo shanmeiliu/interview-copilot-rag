@@ -12,9 +12,9 @@ export default function AdminSidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  function handleLogout() {
-    logout();
-    navigate("/");
+  async function handleLogout() {
+    await logout();
+    navigate("/login");
   }
 
   return (
@@ -47,10 +47,10 @@ export default function AdminSidebar() {
 
       <div className="border-t border-zinc-800 p-4">
         <div className="mb-3 text-xs text-zinc-500">
-          Signed in as {user?.email ?? "admin"}
+          Signed in as {user?.username ?? "admin"}
         </div>
         <button
-          onClick={handleLogout}
+          onClick={() => void handleLogout()}
           className="flex w-full items-center justify-center gap-2 rounded-2xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-800"
         >
           <LogOut size={16} />
