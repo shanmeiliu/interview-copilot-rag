@@ -10,11 +10,14 @@ import SettingsPage from "./pages/admin/SettingsPage";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<PublicChatPage />} />
-      <Route path="/chat/:id" element={<PublicChatPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<PublicChatPage />} />
+        <Route path="/chat/:id" element={<PublicChatPage />} />
+      </Route>
+
       <Route path="/login" element={<LoginPage />} />
 
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute requireRole="admin" />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/knowledge" replace />} />
           <Route path="knowledge" element={<KnowledgePage />} />

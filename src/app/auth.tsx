@@ -23,6 +23,7 @@ type AuthContextValue = {
   refreshSession: () => Promise<void>;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  getDefaultRoute: () => string;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -89,6 +90,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }
 
+  function getDefaultRoute() {
+    if (!user) return "/login";
+    return user.role === "admin" ? "/admin" : "/";
+  }
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
@@ -97,6 +103,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       refreshSession,
       login,
       logout,
+      getDefaultRoute,
     }),
     [user, isLoading]
   );

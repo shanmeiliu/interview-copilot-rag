@@ -1,8 +1,12 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./auth";
 
-export default function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+type Props = {
+  requireRole?: "admin" | "recruiter";
+};
+
+export default function ProtectedRoute({ requireRole }: Props) {
+  const { isAuthenticated, isLoading, user, getDefaultRoute } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -15,6 +19,10 @@ export default function ProtectedRoute() {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  }
+
+  if (requireRole && user?.role !== requireRole) {
+    return <Navigate to={getDefaultRoute()} replace />;
   }
 
   return <Outlet />;
