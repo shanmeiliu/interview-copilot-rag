@@ -80,7 +80,7 @@ export default function PublicChatPage() {
         });
         setDocs(normal.documents ?? []);
       } catch {
-        // allow stream to continue even if warm-up request fails
+        // keep streaming path working even if preload fails
       }
 
       await streamChat(
@@ -115,39 +115,41 @@ export default function PublicChatPage() {
   }
 
   return (
-    <PublicChatLayout
-      title="Interview Copilot"
-      subtitle="Ask Charmaine Cat about Charmaine's background, technical experience, projects, and role fit."
-    >
-      <div className="mb-4 flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-300">
-        <div>
-          Signed in as <span className="font-medium text-zinc-100">{user?.display_name || user?.username}</span>
+    <PublicChatLayout>
+      <div className="mb-4 flex items-center justify-between rounded-2xl border border-white/5 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-300">
+        <div className="min-w-0">
+          Signed in as{" "}
+          <span className="font-medium text-zinc-100">
+            {user?.display_name || user?.username}
+          </span>
           {user?.auth_provider ? (
             <span className="ml-2 text-zinc-500">({user.auth_provider})</span>
           ) : null}
         </div>
+
         <button
           onClick={() => void logout()}
-          className="rounded-xl border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-800"
+          className="rounded-xl border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200 transition hover:bg-zinc-800"
         >
           Logout
         </button>
       </div>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="flex min-h-0 flex-col rounded-[28px] border border-zinc-800 bg-zinc-900/70 shadow-2xl shadow-black/10 backdrop-blur">
-          <div className="border-b border-zinc-800 px-6 py-6">
-            <div className="flex flex-col gap-4">
+        <section className="glass-panel soft-border flex min-h-0 flex-col overflow-hidden rounded-[32px] shadow-2xl shadow-black/10">
+          <div className="border-b border-white/5 px-6 py-6">
+            <div className="flex flex-col gap-5">
               <div>
-                <div className="text-2xl font-semibold tracking-tight">
-                  Charmaine Cat
+                <div className="hero-chip">Charmaine Cat</div>
+                <div className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
+                  Candidate Representative Chat
                 </div>
-                <div className="mt-2 max-w-3xl text-sm leading-6 text-zinc-400">
+                <div className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
                   Charmaine Cat answers recruiter and interviewer questions on Charmaine's behalf using grounded information from her resume, GitHub projects, and supporting materials.
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-4">
                 <ModeSelector value={mode} onChange={setMode} />
                 <SourceSelector sources={sources} onToggle={toggleSource} />
               </div>
@@ -157,7 +159,7 @@ export default function PublicChatPage() {
                   <button
                     key={q}
                     onClick={() => void handleSend(q)}
-                    className="rounded-full border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-500 hover:text-white"
+                    className="rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-500 hover:text-white"
                   >
                     {q}
                   </button>

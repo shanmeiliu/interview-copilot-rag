@@ -14,7 +14,10 @@ body,
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-100;
+  @apply bg-zinc-950 text-zinc-100 antialiased;
+  background-image:
+    radial-gradient(circle at top, rgba(120, 119, 198, 0.12), transparent 35%),
+    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.08), transparent 30%);
 }
 
 * {
@@ -23,4 +26,30 @@ body {
 
 .scrollbar-thin {
   scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(113, 113, 122, 0.5);
+  border-radius: 999px;
+}
+
+.glass-panel {
+  background: rgba(24, 24, 27, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.soft-border {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.page-shell {
+  @apply mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8;
+}
+
+.hero-chip {
+  @apply inline-flex items-center rounded-full border border-zinc-700/70 bg-zinc-900/70 px-3 py-1 text-xs text-zinc-300;
 }

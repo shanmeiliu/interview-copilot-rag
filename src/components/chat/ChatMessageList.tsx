@@ -14,8 +14,8 @@ export default function ChatMessageList({ messages }: Props) {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-thin md:px-6">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
         {messages.map((message) => (
           <ChatMessageItem key={message.id} message={message} />
         ))}

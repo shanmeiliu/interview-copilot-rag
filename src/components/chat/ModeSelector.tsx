@@ -15,16 +15,20 @@ const modes: ChatMode[] = [
 
 export default function ModeSelector({ value, onChange }: Props) {
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value as ChatMode)}
-      className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm"
-    >
+    <div className="inline-flex rounded-2xl border border-zinc-800 bg-zinc-950/70 p-1">
       {modes.map((mode) => (
-        <option key={mode} value={mode}>
+        <button
+          key={mode}
+          onClick={() => onChange(mode)}
+          className={`rounded-xl px-3 py-2 text-sm transition ${
+            value === mode
+              ? "bg-white text-black"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
           {mode}
-        </option>
+        </button>
       ))}
-    </select>
+    </div>
   );
 }

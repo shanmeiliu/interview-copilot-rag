@@ -1,5 +1,4 @@
 import type { ChatMessage } from "../../types/chat";
-
 import AssistantAvatar from "./AssistantAvatar";
 
 type Props = {
@@ -13,10 +12,10 @@ export default function ChatMessageItem({ message }: Props) {
     return (
       <div className="flex justify-end">
         <div className="max-w-3xl">
-          <div className="mb-2 text-right text-xs font-medium uppercase tracking-wide text-zinc-500">
+          <div className="mb-2 text-right text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">
             You
           </div>
-          <div className="rounded-3xl rounded-br-md bg-white px-5 py-4 text-sm leading-7 text-black shadow-md shadow-black/10">
+          <div className="rounded-[26px] rounded-br-md bg-white px-5 py-4 text-sm leading-7 text-black shadow-xl shadow-black/10">
             {message.content}
           </div>
         </div>
@@ -33,10 +32,12 @@ export default function ChatMessageItem({ message }: Props) {
           <span className="text-sm font-semibold text-zinc-100">
             {message.name || "Charmaine Cat"}
           </span>
-          <span className="text-xs text-zinc-500">Personal Assistant</span>
+          <span className="rounded-full border border-zinc-700/70 bg-zinc-900/60 px-2 py-0.5 text-[11px] text-zinc-400">
+            Personal Assistant
+          </span>
         </div>
 
-        <div className="rounded-3xl rounded-tl-md border border-zinc-800 bg-zinc-900 px-5 py-4 text-sm leading-7 text-zinc-100 shadow-lg shadow-black/10">
+        <div className="glass-panel soft-border rounded-[26px] rounded-tl-md px-5 py-4 text-sm leading-7 text-zinc-100 shadow-2xl shadow-black/10">
           {message.content}
         </div>
       </div>
