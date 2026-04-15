@@ -2,7 +2,7 @@ import { useState } from "react";
 import { uploadSourceFile } from "../../lib/api";
 
 type Props = {
-  onSuccess?: () => void;
+  onSuccess?: () => Promise<void> | void;
 };
 
 export default function FileUploadCard({ onSuccess }: Props) {
@@ -22,9 +22,9 @@ export default function FileUploadCard({ onSuccess }: Props) {
 
     try {
       const result = await uploadSourceFile(file, sourceType);
-      setMessage(`Uploaded successfully: ${result?.message ?? file.name}`);
+      setMessage(`Uploaded successfully: ${result?.source?.name ?? file.name}`);
       setFile(null);
-      onSuccess?.();
+      await onSuccess?.();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Upload failed");
     } finally {

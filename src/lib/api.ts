@@ -55,6 +55,51 @@ export async function streamChat(
   }
 }
 
+export async function signupRecruiter(body: {
+  password: string;
+  display_name?: string;
+  email?: string;
+}) {
+  const res = await fetch(`${API_BASE}/api/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function listAdminUsers(limit = 100) {
+  const res = await fetch(`${API_BASE}/api/admin/users?limit=${limit}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function listSources(limit = 100) {
+  const res = await fetch(`${API_BASE}/api/sources?limit=${limit}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
 export async function uploadSourceFile(file: File, sourceType = "document") {
   const formData = new FormData();
   formData.append("file", file);

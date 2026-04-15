@@ -1,10 +1,11 @@
-import { Database, LogOut, Settings, Upload } from "lucide-react";
+import { Database, LogOut, Settings, Upload, Users } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../app/auth";
 
 const navItems = [
   { to: "/admin/knowledge", label: "Knowledge", icon: Database },
   { to: "/admin/ingestion", label: "Ingestion", icon: Upload },
+  { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

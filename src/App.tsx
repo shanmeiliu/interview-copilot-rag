@@ -6,6 +6,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import KnowledgePage from "./pages/admin/KnowledgePage";
 import IngestionPage from "./pages/admin/IngestionPage";
 import SettingsPage from "./pages/admin/SettingsPage";
+import UsersPage from "./pages/admin/UsersPage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route index element={<Navigate to="/admin/knowledge" replace />} />
           <Route path="knowledge" element={<KnowledgePage />} />
           <Route path="ingestion" element={<IngestionPage />} />
+          <Route path="users" element={<UsersPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>

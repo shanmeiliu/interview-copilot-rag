@@ -6,6 +6,7 @@ import ModeSelector from "../../components/chat/ModeSelector";
 import SourceSelector from "../../components/chat/SourceSelector";
 import RetrievedSourcesPanel from "../../components/chat/RetrievedSourcesPanel";
 import { sendChat, streamChat } from "../../lib/api";
+import { useAuth } from "../../app/auth";
 import type { ChatMessage, ChatMode, RetrievedDoc, SourceFilter } from "../../types/chat";
 
 function makeId() {
@@ -21,6 +22,7 @@ const suggestedQuestions = [
 ];
 
 export default function PublicChatPage() {
+  const { user, logout } = useAuth();
   const [mode, setMode] = useState<ChatMode>("Recruiter");
   const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState<RetrievedDoc[]>([]);
@@ -117,6 +119,21 @@ export default function PublicChatPage() {
       title="Interview Copilot"
       subtitle="Ask Charmaine Cat about Charmaine's background, technical experience, projects, and role fit."
     >
+      <div className="mb-4 flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-300">
+        <div>
+          Signed in as <span className="font-medium text-zinc-100">{user?.display_name || user?.username}</span>
+          {user?.auth_provider ? (
+            <span className="ml-2 text-zinc-500">({user.auth_provider})</span>
+          ) : null}
+        </div>
+        <button
+          onClick={() => void logout()}
+          className="rounded-xl border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-800"
+        >
+          Logout
+        </button>
+      </div>
+
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="flex min-h-0 flex-col rounded-[28px] border border-zinc-800 bg-zinc-900/70 shadow-2xl shadow-black/10 backdrop-blur">
           <div className="border-b border-zinc-800 px-6 py-6">
