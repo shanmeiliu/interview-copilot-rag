@@ -7,6 +7,7 @@ import SourceSelector from "../../components/chat/SourceSelector";
 import RetrievedSourcesPanel from "../../components/chat/RetrievedSourcesPanel";
 import { sendChat, streamChat } from "../../lib/api";
 import { useAuth } from "../../app/auth";
+import AssistantAvatar from "../../components/chat/AssistantAvatar";
 import type { ChatMessage, ChatMode, RetrievedDoc, SourceFilter } from "../../types/chat";
 
 function makeId() {
@@ -139,15 +140,18 @@ export default function PublicChatPage() {
         <section className="glass-panel soft-border flex min-h-0 flex-col overflow-hidden rounded-[32px] shadow-2xl shadow-black/10">
           <div className="border-b border-white/5 px-6 py-6">
             <div className="flex flex-col gap-5">
-              <div>
+              <div className="flex items-start gap-4">
+                    <AssistantAvatar size="md" /><div>
                 <div className="hero-chip">Charmaine Cat</div>
                 <div className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
-                  Candidate Representative Chat
+                        Candidate Representative Chat
                 </div>
                 <div className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                  Charmaine Cat answers recruiter and interviewer questions on Charmaine's behalf using grounded information from her resume, GitHub projects, and supporting materials.
+                    Charmaine Cat answers recruiter and interviewer questions on Charmaine's behalf using grounded information from her resume, GitHub projects, and supporting materials.
                 </div>
               </div>
+            </div>
+        
 
               <div className="flex flex-col gap-4">
                 <ModeSelector value={mode} onChange={setMode} />

@@ -15,5 +15,5 @@
     "strict": true,
     "baseUrl": "./src"
   },
-  "include": ["src"]
+  "include": ["src", "src/types"]
 }

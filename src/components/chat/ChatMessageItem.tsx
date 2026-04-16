@@ -25,7 +25,7 @@ export default function ChatMessageItem({ message }: Props) {
 
   return (
     <div className="flex items-start gap-3">
-      <AssistantAvatar />
+      <AssistantAvatar size="md" />
 
       <div className="max-w-3xl">
         <div className="mb-2 flex items-center gap-2">
