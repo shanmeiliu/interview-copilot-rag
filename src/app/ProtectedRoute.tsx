@@ -2,28 +2,23 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./auth";
 
 type Props = {
-  requireRole?: "admin" | "recruiter";
+  requireRole?: string; // note: matches your current App.tsx usage
 };
 
 export default function ProtectedRoute({ requireRole }: Props) {
-  const { isAuthenticated, isLoading, user, getDefaultRoute } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-zinc-400">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
+  // Not logged in → go to login
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  if (requireRole && user?.role !== requireRole) {
-    return <Navigate to={getDefaultRoute()} replace />;
+  // Role check (for admin routes)
+  if (requireRole && user.role !== requireRole) {
+    return <Navigate to="/" replace />;
   }
 
+  // Authorized → render nested routes
   return <Outlet />;
 }

@@ -5,8 +5,8 @@ import LoginPage from "./pages/admin/LoginPage";
 import AdminLayout from "./pages/admin/AdminLayout";
 import KnowledgePage from "./pages/admin/KnowledgePage";
 import IngestionPage from "./pages/admin/IngestionPage";
-import SettingsPage from "./pages/admin/SettingsPage";
 import UsersPage from "./pages/admin/UsersPage";
+import SettingsPage from "./pages/admin/SettingsPage";
 
 export default function App() {
   return (
