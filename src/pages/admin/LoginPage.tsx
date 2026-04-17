@@ -57,7 +57,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(requestedFrom || getDefaultRoute(), { replace: true });
+      console.log("user after login:", user);
+      navigate(requestedFrom || getDefaultRoute(user), { replace: true });
     }
   }, [isAuthenticated, requestedFrom, getDefaultRoute, navigate, user]);
 
@@ -165,7 +166,7 @@ export default function LoginPage() {
               ].map((q) => (
                 <div
                   key={q}
-                  className="rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300"
+                  className="rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300 transition-all hover:border-zinc-500 hover:text-white hover:bg-zinc-800 cursor-pointer"
                 >
                   {q}
                 </div>

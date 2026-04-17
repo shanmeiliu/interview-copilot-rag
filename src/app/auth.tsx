@@ -90,10 +90,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }
 
-  function getDefaultRoute() {
-    if (!user) return "/login";
-    return user.role === "admin" ? "/admin" : "/";
+  // function getDefaultRoute() {
+  //   if (!user) return "/login";
+  //   return user.role === "admin" ? "/admin" : "/";
+  // }
+  function getDefaultRoute(user?: any) {
+  if (!user) return "/";
+
+  if (user.role === "admin") {
+    return "/admin/knowledge";
   }
+
+  return "/";
+}
 
   const value = useMemo<AuthContextValue>(
     () => ({

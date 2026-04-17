@@ -1,4 +1,5 @@
-import avatarSrc from "../../assets/Chatbot-kitten.png";
+//import avatarSrc from "../../assets/Chatbot-kitten.png";
+import avatarSrc from "../../assets/Chatbot.png";
 import { useState } from "react";
 
 type Props = {
