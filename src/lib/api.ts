@@ -100,6 +100,30 @@ export async function listSources(limit = 100) {
   return res.json();
 }
 
+export async function syncSource(id: number) {
+  const res = await fetch(`${API_BASE}/api/sources/${id}/sync`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function deleteSource(id: number) {
+  const res = await fetch(`${API_BASE}/api/sources/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+}
+
 export async function uploadSourceFile(file: File, sourceType = "document") {
   const formData = new FormData();
   formData.append("file", file);
