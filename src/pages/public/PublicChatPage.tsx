@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PublicChatLayout from "../../components/layout/PublicChatLayout";
 import ChatMessageList from "../../components/chat/ChatMessageList";
 import ChatInput from "../../components/chat/ChatInput";
 import ModeSelector from "../../components/chat/ModeSelector";
 import SourceSelector from "../../components/chat/SourceSelector";
 import RetrievedSourcesPanel from "../../components/chat/RetrievedSourcesPanel";
+import AssistantAvatar from "../../components/chat/AssistantAvatar";
 import { sendChat, streamChat } from "../../lib/api";
 import { useAuth } from "../../app/auth";
-import AssistantAvatar from "../../components/chat/AssistantAvatar";
 import type { ChatMessage, ChatMode, RetrievedDoc, SourceFilter } from "../../types/chat";
 
 function makeId() {
@@ -24,6 +25,8 @@ const suggestedQuestions = [
 
 export default function PublicChatPage() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [mode, setMode] = useState<ChatMode>("Recruiter");
   const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState<RetrievedDoc[]>([]);
@@ -117,6 +120,23 @@ export default function PublicChatPage() {
 
   return (
     <PublicChatLayout>
+      {user?.role === "admin" && (
+        <div className="mb-4 flex justify-end gap-2">
+          <button
+            onClick={() => navigate("/admin/knowledge")}
+            className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 transition hover:bg-zinc-800"
+          >
+            🧠 Admin Knowledge
+          </button>
+          <button
+            onClick={() => navigate("/admin/users")}
+            className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 transition hover:bg-zinc-800"
+          >
+            👥 Admin Users
+          </button>
+        </div>
+      )}
+
       <div className="mb-4 flex items-center justify-between rounded-2xl border border-white/5 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-300">
         <div className="min-w-0">
           Signed in as{" "}
@@ -125,6 +145,9 @@ export default function PublicChatPage() {
           </span>
           {user?.auth_provider ? (
             <span className="ml-2 text-zinc-500">({user.auth_provider})</span>
+          ) : null}
+          {user?.role ? (
+            <span className="ml-2 text-zinc-500">[{user.role}]</span>
           ) : null}
         </div>
 
@@ -141,17 +164,17 @@ export default function PublicChatPage() {
           <div className="border-b border-white/5 px-6 py-6">
             <div className="flex flex-col gap-5">
               <div className="flex items-start gap-4">
-                    <AssistantAvatar size="md" /><div>
-                <div className="hero-chip">Charmaine Cat</div>
-                <div className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
-                        Candidate Representative Chat
-                </div>
-                <div className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
+                <AssistantAvatar size="md" />
+                <div>
+                  <div className="hero-chip">Charmaine Cat</div>
+                  <div className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
+                    Candidate Representative Chat
+                  </div>
+                  <div className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
                     Charmaine Cat answers recruiter and interviewer questions on Charmaine's behalf using grounded information from her resume, GitHub projects, and supporting materials.
+                  </div>
                 </div>
               </div>
-            </div>
-        
 
               <div className="flex flex-col gap-4">
                 <ModeSelector value={mode} onChange={setMode} />
@@ -163,7 +186,7 @@ export default function PublicChatPage() {
                   <button
                     key={q}
                     onClick={() => void handleSend(q)}
-                    className="rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-500 hover:text-white"
+                    className="cursor-pointer rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300 transition-all hover:border-zinc-500 hover:bg-zinc-800 hover:text-white"
                   >
                     {q}
                   </button>
