@@ -42,20 +42,9 @@ export default function AppTopNav() {
           </NavLink>
 
           {isAdmin && (
-            <>
-              <NavLink to="/admin/knowledge" className={linkClass}>
-                🧠 Knowledge
-              </NavLink>
-              <NavLink to="/admin/ingestion" className={linkClass}>
-                📥 Ingestion
-              </NavLink>
-              <NavLink to="/admin/users" className={linkClass}>
-                👥 Users
-              </NavLink>
-              <NavLink to="/admin/settings" className={linkClass}>
-                ⚙️ Settings
-              </NavLink>
-            </>
+            <NavLink to="/admin/knowledge" className={linkClass}>
+              🧠 Admin
+            </NavLink>
           )}
         </div>
 
@@ -85,20 +74,9 @@ export default function AppTopNav() {
         </NavLink>
 
         {isAdmin && (
-          <>
-            <NavLink to="/admin/knowledge" className={linkClass}>
-              🧠 Knowledge
-            </NavLink>
-            <NavLink to="/admin/ingestion" className={linkClass}>
-              📥 Ingestion
-            </NavLink>
-            <NavLink to="/admin/users" className={linkClass}>
-              👥 Users
-            </NavLink>
-            <NavLink to="/admin/settings" className={linkClass}>
-              ⚙️ Settings
-            </NavLink>
-          </>
+          <NavLink to="/admin/knowledge" className={linkClass}>
+            🧠 Admin
+          </NavLink>
         )}
       </div>
     </div>
