@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from "react";
+import AppTopNav from "./AppTopNav";
 
 type Props = PropsWithChildren<{
   title?: string;
@@ -12,11 +13,13 @@ export default function PublicChatLayout({
 }: Props) {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="page-shell flex min-h-screen flex-col py-6 md:py-8">
+      <AppTopNav />
+
+      <div className="page-shell flex min-h-[calc(100vh-4rem)] flex-col py-6 md:py-8">
         <header className="glass-panel soft-border overflow-hidden rounded-[32px]">
           <div className="border-b border-white/5 px-6 py-6 md:px-8">
             <div className="hero-chip">AI candidate representative</div>
-            <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight leading-[1.1] md:text-4xl">
               {title}
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400 md:text-base">

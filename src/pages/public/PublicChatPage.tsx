@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PublicChatLayout from "../../components/layout/PublicChatLayout";
 import ChatMessageList from "../../components/chat/ChatMessageList";
 import ChatInput from "../../components/chat/ChatInput";
@@ -8,7 +7,6 @@ import SourceSelector from "../../components/chat/SourceSelector";
 import RetrievedSourcesPanel from "../../components/chat/RetrievedSourcesPanel";
 import AssistantAvatar from "../../components/chat/AssistantAvatar";
 import { sendChat, streamChat } from "../../lib/api";
-import { useAuth } from "../../app/auth";
 import type { ChatMessage, ChatMode, RetrievedDoc, SourceFilter } from "../../types/chat";
 
 function makeId() {
@@ -24,9 +22,6 @@ const suggestedQuestions = [
 ];
 
 export default function PublicChatPage() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
   const [mode, setMode] = useState<ChatMode>("Recruiter");
   const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState<RetrievedDoc[]>([]);
@@ -120,45 +115,6 @@ export default function PublicChatPage() {
 
   return (
     <PublicChatLayout>
-      {user?.role === "admin" && (
-        <div className="mb-4 flex justify-end gap-2">
-          <button
-            onClick={() => navigate("/admin/knowledge")}
-            className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 transition hover:bg-zinc-800"
-          >
-            🧠 Admin Knowledge
-          </button>
-          <button
-            onClick={() => navigate("/admin/users")}
-            className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 transition hover:bg-zinc-800"
-          >
-            👥 Admin Users
-          </button>
-        </div>
-      )}
-
-      <div className="mb-4 flex items-center justify-between rounded-2xl border border-white/5 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-300">
-        <div className="min-w-0">
-          Signed in as{" "}
-          <span className="font-medium text-zinc-100">
-            {user?.display_name || user?.username}
-          </span>
-          {user?.auth_provider ? (
-            <span className="ml-2 text-zinc-500">({user.auth_provider})</span>
-          ) : null}
-          {user?.role ? (
-            <span className="ml-2 text-zinc-500">[{user.role}]</span>
-          ) : null}
-        </div>
-
-        <button
-          onClick={() => void logout()}
-          className="rounded-xl border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200 transition hover:bg-zinc-800"
-        >
-          Logout
-        </button>
-      </div>
-
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="glass-panel soft-border flex min-h-0 flex-col overflow-hidden rounded-[32px] shadow-2xl shadow-black/10">
           <div className="border-b border-white/5 px-6 py-6">
