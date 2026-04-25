@@ -39,12 +39,21 @@ export default function PublicChatPage() {
     { id: "resume", label: "Resume", enabled: true },
     { id: "repos", label: "GitHub Repos", enabled: true },
     { id: "job-desc", label: "Job Descriptions", enabled: false },
-    { id: "notes", label: "Notes", enabled: false },
+    { id: "notes", label: "Notes / Interview Q&A", enabled: true },
   ]);
 
   const activeFilters = useMemo(() => {
-    const enabled = sources.filter((s) => s.enabled).map((s) => s.id);
-    return { metadata: { source_group: enabled.join(",") } };
+  const enabled = sources.filter((s) => s.enabled).map((s) => s.id);
+
+  if (enabled.length === sources.length) {
+    return {};
+  }
+
+  return {
+    metadata: {
+      source_groups: enabled,
+    },
+  };
   }, [sources]);
 
   function toggleSource(id: string) {
