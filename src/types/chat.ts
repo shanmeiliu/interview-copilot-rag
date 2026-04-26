@@ -1,3 +1,5 @@
+export type ChatRole = "user" | "assistant";
+
 export type ChatMode =
   | "Recruiter"
   | "HR"
@@ -5,28 +7,29 @@ export type ChatMode =
   | "Technical Interviewer"
   | "Resume Reviewer";
 
-export interface SourceFilter {
+export type ChatMessage = {
+  id: string;
+  role: ChatRole;
+  name?: string;
+  content: string;
+};
+
+export type SourceFilter = {
   id: string;
   label: string;
   enabled: boolean;
-}
+};
 
-export interface ChatMessage {
+export type RetrievedDoc = {
   id: string;
-  role: "user" | "assistant";
   content: string;
-  name?: string;
-}
-
-export interface RetrievedDoc {
-  id: string;
   source: string;
-  content: string;
-}
+  metadata?: Record<string, unknown>;
+};
 
-export interface ChatResponse {
+export type ChatResponse = {
   rewritten_query: string;
   documents: RetrievedDoc[];
   answer: string;
   filters?: Record<string, unknown>;
-}
+};

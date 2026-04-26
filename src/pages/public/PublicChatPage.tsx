@@ -25,6 +25,7 @@ export default function PublicChatPage() {
   const [mode, setMode] = useState<ChatMode>("Recruiter");
   const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState<RetrievedDoc[]>([]);
+  const [lastQuery, setLastQuery] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: makeId(),
@@ -38,22 +39,22 @@ export default function PublicChatPage() {
   const [sources, setSources] = useState<SourceFilter[]>([
     { id: "resume", label: "Resume", enabled: true },
     { id: "repos", label: "GitHub Repos", enabled: true },
-    { id: "job-desc", label: "Job Descriptions", enabled: false },
+    { id: "job-desc", label: "Job Descriptions", enabled: true },
     { id: "notes", label: "Notes / Interview Q&A", enabled: true },
   ]);
 
   const activeFilters = useMemo(() => {
-  const enabled = sources.filter((s) => s.enabled).map((s) => s.id);
+    const enabled = sources.filter((s) => s.enabled).map((s) => s.id);
 
-  if (enabled.length === sources.length) {
-    return {};
-  }
+    if (enabled.length === sources.length) {
+      return {};
+    }
 
-  return {
-    metadata: {
-      source_groups: enabled,
-    },
-  };
+    return {
+      metadata: {
+        source_groups: enabled,
+      },
+    };
   }, [sources]);
 
   function toggleSource(id: string) {
@@ -64,6 +65,7 @@ export default function PublicChatPage() {
 
   async function handleSend(text: string) {
     setLoading(true);
+    setLastQuery(text);
 
     const userMessage: ChatMessage = {
       id: makeId(),
@@ -165,7 +167,7 @@ export default function PublicChatPage() {
         </section>
 
         <section className="hidden min-h-0 xl:block">
-          <RetrievedSourcesPanel docs={docs} />
+          <RetrievedSourcesPanel docs={docs} query={lastQuery} />
         </section>
       </div>
     </PublicChatLayout>
