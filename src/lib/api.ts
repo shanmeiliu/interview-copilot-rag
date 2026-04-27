@@ -1,4 +1,4 @@
-import type { ChatResponse } from "../types/chat";
+import type { ChatResponse, RetrievedDoc } from "../types/chat";
 
 const API_BASE = "http://localhost:8080";
 
@@ -19,7 +19,8 @@ export async function sendChat(body: Record<string, unknown>): Promise<ChatRespo
 
 export async function streamChat(
   body: Record<string, unknown>,
-  onToken: (token: string) => void
+  onToken: (token: string) => void,
+  onSources?: (docs: RetrievedDoc[]) => void
 ): Promise<void> {
   const res = await fetch(`${API_BASE}/api/chat/stream`, {
     method: "POST",
@@ -46,7 +47,12 @@ export async function streamChat(
 
     for (const part of parts) {
       if (!part.startsWith("data: ")) continue;
+
       const payload = JSON.parse(part.slice(6));
+
+      if (payload.type === "sources") {
+        onSources?.(payload.documents ?? []);
+      }
 
       if (payload.type === "token") {
         onToken(payload.content);

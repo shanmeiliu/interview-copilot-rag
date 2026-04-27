@@ -66,6 +66,7 @@ export default function PublicChatPage() {
   async function handleSend(text: string) {
     setLoading(true);
     setLastQuery(text);
+    setDocs([]);
 
     const userMessage: ChatMessage = {
       id: makeId(),
@@ -81,44 +82,48 @@ export default function PublicChatPage() {
       { id: assistantId, role: "assistant", name: "Charmaine Cat", content: "" },
     ]);
 
-    try {
-      try {
-        const normal = await sendChat({
-          session_id: "public-session",
-          query: `[${mode}] ${text}`,
-          filters: activeFilters,
-        });
-        setDocs(normal.documents ?? []);
-      } catch {
-        // keep streaming path working even if preload fails
-      }
+    const payload = {
+      session_id: "public-session",
+      query: `[${mode}] ${text}`,
+      filters: activeFilters,
+    };
 
+    try {
       await streamChat(
-        {
-          session_id: "public-session",
-          query: `[${mode}] ${text}`,
-          filters: activeFilters,
-        },
+        payload,
         (token) => {
           setMessages((prev) =>
             prev.map((m) =>
               m.id === assistantId ? { ...m, content: m.content + token } : m
             )
           );
+        },
+        (documents) => {
+          setDocs(documents);
         }
       );
-    } catch (err) {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantId
-            ? {
-                ...m,
-                content:
-                  err instanceof Error ? `Error: ${err.message}` : "Unknown error",
-              }
-            : m
-        )
-      );
+    } catch {
+      try {
+        const normal = await sendChat(payload);
+        setDocs(normal.documents ?? []);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: normal.answer } : m
+          )
+        );
+      } catch (err) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? {
+                  ...m,
+                  content:
+                    err instanceof Error ? `Error: ${err.message}` : "Unknown error",
+                }
+              : m
+          )
+        );
+      }
     } finally {
       setLoading(false);
     }
