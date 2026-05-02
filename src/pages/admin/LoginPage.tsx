@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../app/auth";
-import { signupRecruiter } from "../../lib/api";
+import { apiUrl, signupRecruiter } from "../../lib/api";
 import AssistantAvatar from "../../components/chat/AssistantAvatar";
 
-const API_BASE = "http://localhost:8080";
+
 
 type Mode = "login" | "signup";
 
@@ -100,9 +100,9 @@ export default function LoginPage() {
     }
   }
 
-  function handleGoogleLogin() {
-    window.location.href = `${API_BASE}/api/auth/google/start`;
-  }
+function handleGoogleLogin() {
+  window.location.href = apiUrl("/api/auth/google/start");
+}
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">

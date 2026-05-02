@@ -1,9 +1,14 @@
 import type { ChatResponse, RetrievedDoc } from "../types/chat";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_BASE_PATH || "";
+
+export function apiUrl(path: string) {
+  const base = API_BASE.endsWith("/") ? API_BASE.slice(0, -1) : API_BASE;
+  return `${base}${path}`;
+}
 
 export async function sendChat(body: Record<string, unknown>): Promise<ChatResponse> {
-  const res = await fetch(`${API_BASE}/api/chat`, {
+  const res = await fetch(apiUrl("/api/chat"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -22,7 +27,7 @@ export async function streamChat(
   onToken: (token: string) => void,
   onSources?: (docs: RetrievedDoc[]) => void
 ): Promise<void> {
-  const res = await fetch(`${API_BASE}/api/chat/stream`, {
+  const res = await fetch(apiUrl("/api/chat/stream"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -66,7 +71,7 @@ export async function signupRecruiter(body: {
   display_name?: string;
   email?: string;
 }) {
-  const res = await fetch(`${API_BASE}/api/auth/signup`, {
+  const res = await fetch(apiUrl("/api/auth/signup"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -81,7 +86,7 @@ export async function signupRecruiter(body: {
 }
 
 export async function listAdminUsers(limit = 100) {
-  const res = await fetch(`${API_BASE}/api/admin/users?limit=${limit}`, {
+  const res = await fetch(apiUrl(`/api/admin/users?limit=${limit}`), {
     method: "GET",
     credentials: "include",
   });
@@ -94,7 +99,7 @@ export async function listAdminUsers(limit = 100) {
 }
 
 export async function listSources(limit = 100) {
-  const res = await fetch(`${API_BASE}/api/sources?limit=${limit}`, {
+  const res = await fetch(apiUrl(`/api/sources?limit=${limit}`), {
     method: "GET",
     credentials: "include",
   });
@@ -107,7 +112,7 @@ export async function listSources(limit = 100) {
 }
 
 export async function syncSource(id: number) {
-  const res = await fetch(`${API_BASE}/api/sources/${id}/sync`, {
+  const res = await fetch(apiUrl(`/api/sources/${id}/sync`), {
     method: "POST",
     credentials: "include",
   });
@@ -120,7 +125,7 @@ export async function syncSource(id: number) {
 }
 
 export async function deleteSource(id: number) {
-  const res = await fetch(`${API_BASE}/api/sources/${id}`, {
+  const res = await fetch(apiUrl(`/api/sources/${id}`), {
     method: "DELETE",
     credentials: "include",
   });
@@ -135,7 +140,7 @@ export async function uploadSourceFile(file: File, sourceType = "document") {
   formData.append("file", file);
   formData.append("source_type", sourceType);
 
-  const res = await fetch(`${API_BASE}/api/sources/upload`, {
+  const res = await fetch(apiUrl("/api/sources/upload"), {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -154,7 +159,7 @@ export async function ingestGithubRepo(body: {
   include_patterns?: string[];
   source_type?: string;
 }) {
-  const res = await fetch(`${API_BASE}/api/sources/github`, {
+  const res = await fetch(apiUrl("/api/sources/github"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -169,7 +174,7 @@ export async function ingestGithubRepo(body: {
 }
 
 export async function ingestChunks(body: Record<string, unknown>) {
-  const res = await fetch(`${API_BASE}/api/ingest`, {
+  const res = await fetch(apiUrl("/api/ingest"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

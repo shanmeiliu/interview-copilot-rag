@@ -6,7 +6,7 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-
+import { apiUrl } from "../lib/api";
 type AuthUser = {
   id: number;
   username: string;
@@ -28,7 +28,6 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const API_BASE = "http://localhost:8080";
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -36,7 +35,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   async function refreshSession() {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/me`, {
+      const res = await fetch(apiUrl("/api/auth/me")  , {
         method: "GET",
         credentials: "include",
       });
@@ -62,7 +61,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   async function login(username: string, password: string) {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
+    const res = await fetch(apiUrl("/api/auth/login"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,7 +80,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   async function logout() {
     try {
-      await fetch(`${API_BASE}/api/auth/logout`, {
+      await fetch(apiUrl("/api/auth/logout"), {
         method: "POST",
         credentials: "include",
       });
