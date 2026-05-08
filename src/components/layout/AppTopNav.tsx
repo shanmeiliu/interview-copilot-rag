@@ -24,17 +24,19 @@ export default function AppTopNav() {
   return (
     <div className="sticky top-0 z-50 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl">
       <div className="page-shell flex h-16 items-center justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3">
+        <NavLink
+          to="/charmaine-cat"
+          className="flex min-w-0 items-center gap-3 rounded-2xl px-2 py-1 transition hover:bg-zinc-900"
+        >
           <AssistantAvatar size="sm" />
+
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-zinc-100">
               Interview Copilot
             </div>
-            <div className="truncate text-xs text-zinc-500">
-              Charmaine Cat
-            </div>
+            <div className="truncate text-xs text-zinc-500">Charmaine Cat</div>
           </div>
-        </div>
+        </NavLink>
 
         <div className="hidden items-center gap-2 md:flex">
           <NavLink to="/" end className={linkClass}>

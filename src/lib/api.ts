@@ -7,6 +7,13 @@ export function apiUrl(path: string) {
   return `${base}${path}`;
 }
 
+async function readJsonOrThrow<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json() as Promise<T>;
+}
+
 export async function sendChat(body: Record<string, unknown>): Promise<ChatResponse> {
   const res = await fetch(apiUrl("/api/chat"), {
     method: "POST",
@@ -15,11 +22,7 @@ export async function sendChat(body: Record<string, unknown>): Promise<ChatRespo
     body: JSON.stringify(body),
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow<ChatResponse>(res);
 }
 
 export async function streamChat(
@@ -78,11 +81,7 @@ export async function signupRecruiter(body: {
     body: JSON.stringify(body),
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow(res);
 }
 
 export async function listAdminUsers(limit = 100) {
@@ -91,11 +90,7 @@ export async function listAdminUsers(limit = 100) {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow(res);
 }
 
 export async function listSources(limit = 100) {
@@ -104,11 +99,7 @@ export async function listSources(limit = 100) {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow(res);
 }
 
 export async function syncSource(id: number) {
@@ -117,11 +108,7 @@ export async function syncSource(id: number) {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow(res);
 }
 
 export async function deleteSource(id: number) {
@@ -146,11 +133,7 @@ export async function uploadSourceFile(file: File, sourceType = "document") {
     body: formData,
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow(res);
 }
 
 export async function ingestGithubRepo(body: {
@@ -166,11 +149,7 @@ export async function ingestGithubRepo(body: {
     body: JSON.stringify(body),
   });
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return res.json();
+  return readJsonOrThrow(res);
 }
 
 export async function ingestChunks(body: Record<string, unknown>) {
@@ -181,9 +160,182 @@ export async function ingestChunks(body: Record<string, unknown>) {
     body: JSON.stringify(body),
   });
 
+  return readJsonOrThrow(res);
+}
+
+export type CatProfile = {
+  display_name: string;
+  tagline: string;
+  bio: string;
+  avatar_photo_id?: number | null;
+  avatar_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type CatStory = {
+  id: number;
+  title: string;
+  body: string;
+  sort_order: number;
+  is_published: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type CatPhoto = {
+  id: number;
+  filename: string;
+  original_filename: string;
+  content_type: string;
+  public_url: string;
+  caption: string;
+  alt_text: string;
+  sort_order: number;
+  is_published: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type CatProfilePayload = {
+  profile: CatProfile;
+  stories: CatStory[];
+  photos: CatPhoto[];
+};
+
+export function catPhotoUrl(publicUrl?: string | null) {
+  if (!publicUrl) return "";
+  return apiUrl(publicUrl);
+}
+
+export async function getPublicCatProfile(): Promise<CatProfilePayload> {
+  const res = await fetch(apiUrl("/api/cat-profile"), {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return readJsonOrThrow<CatProfilePayload>(res);
+}
+
+export async function getAdminCatProfile(): Promise<CatProfilePayload> {
+  const res = await fetch(apiUrl("/api/admin/cat-profile"), {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return readJsonOrThrow<CatProfilePayload>(res);
+}
+
+export async function updateAdminCatProfile(body: {
+  display_name: string;
+  tagline: string;
+  bio: string;
+  avatar_photo_id?: number | null;
+}) {
+  const res = await fetch(apiUrl("/api/admin/cat-profile"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  return readJsonOrThrow<{ profile: CatProfile }>(res);
+}
+
+export async function createCatStory(body: {
+  title: string;
+  body: string;
+  sort_order: number;
+  is_published: boolean;
+}) {
+  const res = await fetch(apiUrl("/api/admin/cat-profile/stories"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  return readJsonOrThrow<{ story: CatStory }>(res);
+}
+
+export async function updateCatStory(
+  id: number,
+  body: {
+    title: string;
+    body: string;
+    sort_order: number;
+    is_published: boolean;
+  }
+) {
+  const res = await fetch(apiUrl(`/api/admin/cat-profile/stories/${id}`), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  return readJsonOrThrow<{ story: CatStory }>(res);
+}
+
+export async function deleteCatStory(id: number) {
+  const res = await fetch(apiUrl(`/api/admin/cat-profile/stories/${id}`), {
+    method: "DELETE",
+    credentials: "include",
+  });
+
   if (!res.ok) {
     throw new Error(await res.text());
   }
+}
 
-  return res.json();
+export async function uploadCatPhoto(file: File, body?: {
+  caption?: string;
+  alt_text?: string;
+  sort_order?: number;
+  is_published?: boolean;
+}) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("caption", body?.caption ?? "");
+  formData.append("alt_text", body?.alt_text ?? "");
+  formData.append("sort_order", String(body?.sort_order ?? 0));
+  formData.append("is_published", String(body?.is_published ?? true));
+
+  const res = await fetch(apiUrl("/api/admin/cat-profile/photos"), {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  return readJsonOrThrow<{ photo: CatPhoto }>(res);
+}
+
+export async function updateCatPhoto(
+  id: number,
+  body: {
+    caption: string;
+    alt_text: string;
+    sort_order: number;
+    is_published: boolean;
+  }
+) {
+  const res = await fetch(apiUrl(`/api/admin/cat-profile/photos/${id}`), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  return readJsonOrThrow<{ photo: CatPhoto }>(res);
+}
+
+export async function deleteCatPhoto(id: number) {
+  const res = await fetch(apiUrl(`/api/admin/cat-profile/photos/${id}`), {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
 }

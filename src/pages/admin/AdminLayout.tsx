@@ -5,6 +5,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: "/admin/knowledge", label: "Knowledge" },
+    { to: "/admin/cat-profile", label: "Charmaine Cat" },
     { to: "/admin/ingestion", label: "Ingestion" },
     { to: "/admin/users", label: "Users" },
     { to: "/admin/settings", label: "Settings" },
@@ -39,9 +40,7 @@ export default function AdminLayout() {
 
       <main className="flex-1">
         <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-          <div className="text-sm text-zinc-400">
-            Admin / Knowledge System
-          </div>
+          <div className="text-sm text-zinc-400">Admin / Knowledge System</div>
 
           <button
             onClick={() => navigate("/")}
@@ -51,7 +50,7 @@ export default function AdminLayout() {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-0">
           <Outlet />
         </div>
       </main>
