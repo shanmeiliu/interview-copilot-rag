@@ -8,6 +8,7 @@ type SourceItem = {
   file_path?: string | null;
   created_at?: string;
   updated_at?: string;
+  chunk_count?: number;
   metadata?: Record<string, unknown>;
 };
 
@@ -124,26 +125,30 @@ export default function SourceList({
                 </div>
 
                 <div className="mt-3 space-y-1 text-xs text-zinc-500">
-                  <div>Key: {item.source_key}</div>
+  <div>Key: {item.source_key}</div>
 
-                  {item.origin ? (
-                    <div>Origin: {item.origin}</div>
-                  ) : null}
+  {item.origin ? (
+    <div>Origin: {item.origin}</div>
+  ) : null}
 
-                  {extractedCharCount !== null ? (
-                    <div>
-                      Extracted chars: {extractedCharCount}
-                    </div>
-                  ) : null}
+  {extractedCharCount !== null ? (
+    <div>
+      Extracted chars: {extractedCharCount}
+    </div>
+  ) : null}
 
-                  <div>
-                    Created: {formatDate(item.created_at)}
-                  </div>
+  <div>
+    Chunks: {item.chunk_count ?? 0}
+  </div>
 
-                  <div>
-                    Updated: {formatDate(item.updated_at)}
-                  </div>
-                </div>
+  <div>
+    Created: {formatDate(item.created_at)}
+  </div>
+
+  <div>
+    Updated: {formatDate(item.updated_at)}
+  </div>
+</div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {isGithub ? (
