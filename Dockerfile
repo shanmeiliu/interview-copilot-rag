@@ -17,8 +17,12 @@ RUN npm run build
 FROM nginx:1.27-alpine
 
 ARG VITE_APP_BASE_PATH=/rag
+ARG FRONTEND_INTERNAL_PORT=80
+ARG BACKEND_UPSTREAM=http://backend:8080
+
 ENV APP_BASE_PATH=${VITE_APP_BASE_PATH}
-ENV BACKEND_UPSTREAM=http://backend:8080
+ENV FRONTEND_INTERNAL_PORT=${FRONTEND_INTERNAL_PORT}
+ENV BACKEND_UPSTREAM=${BACKEND_UPSTREAM}
 
 COPY --from=builder /app/dist /tmp/dist
 
@@ -28,4 +32,4 @@ RUN mkdir -p "/usr/share/nginx/html${VITE_APP_BASE_PATH}" \
 
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
-EXPOSE 80
+EXPOSE ${FRONTEND_INTERNAL_PORT}
