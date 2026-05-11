@@ -177,6 +177,10 @@ export type CatStory = {
   id: number;
   title: string;
   body: string;
+  photo_id?: number | null;
+  photo_url?: string | null;
+  photo_caption?: string | null;
+  photo_alt_text?: string | null;
   sort_order: number;
   is_published: boolean;
   created_at?: string;
@@ -245,6 +249,7 @@ export async function updateAdminCatProfile(body: {
 export async function createCatStory(body: {
   title: string;
   body: string;
+  photo_id?: number | null;
   sort_order: number;
   is_published: boolean;
 }) {
@@ -263,6 +268,7 @@ export async function updateCatStory(
   body: {
     title: string;
     body: string;
+    photo_id?: number | null;
     sort_order: number;
     is_published: boolean;
   }

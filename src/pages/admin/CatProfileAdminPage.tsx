@@ -17,6 +17,7 @@ import {
 type StoryDraft = {
   title: string;
   body: string;
+  photo_id?: number | null;
   sort_order: number;
   is_published: boolean;
 };
@@ -38,11 +39,12 @@ export default function CatProfileAdminPage() {
   const [stories, setStories] = useState<CatStory[]>([]);
   const [photos, setPhotos] = useState<CatPhoto[]>([]);
   const [storyDraft, setStoryDraft] = useState<StoryDraft>({
-    title: "",
-    body: "",
-    sort_order: 0,
-    is_published: true,
-  });
+  title: "",
+  body: "",
+  photo_id: null,
+  sort_order: 0,
+  is_published: true,
+});
   const [photoDraft, setPhotoDraft] = useState<PhotoDraft>({
     caption: "",
     alt_text: "",
@@ -99,7 +101,13 @@ export default function CatProfileAdminPage() {
     try {
       setError("");
       await createCatStory(storyDraft);
-      setStoryDraft({ title: "", body: "", sort_order: 0, is_published: true });
+      setStoryDraft({
+    title: "",
+    body: "",
+    photo_id: null,
+    sort_order: 0,
+    is_published: true,
+    });
       setMessage("Story created.");
       await loadProfile();
     } catch (err) {
@@ -113,6 +121,7 @@ export default function CatProfileAdminPage() {
       await updateCatStory(story.id, {
         title: story.title,
         body: story.body,
+        photo_id: story.photo_id ?? null,
         sort_order: story.sort_order,
         is_published: story.is_published,
       });
@@ -289,109 +298,177 @@ export default function CatProfileAdminPage() {
           </section>
 
           <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
-            <h2 className="text-sm font-semibold text-zinc-100">Stories</h2>
+        <h2 className="text-sm font-semibold text-zinc-100">Stories</h2>
+        <p className="mt-1 text-sm text-zinc-500">
+            Attach a gallery photo to each story so the public profile feels more like a real social profile.
+            </p>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_120px_120px]">
-              <input
-                placeholder="Story title"
-                value={storyDraft.title}
-                onChange={(e) =>
-                  setStoryDraft((prev) => ({ ...prev, title: e.target.value }))
-                }
-                className="rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none"
-              />
-              <input
-                placeholder="Story body"
-                value={storyDraft.body}
-                onChange={(e) =>
-                  setStoryDraft((prev) => ({ ...prev, body: e.target.value }))
-                }
-                className="rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none"
-              />
-              <input
-                type="number"
-                value={storyDraft.sort_order}
-                onChange={(e) =>
-                  setStoryDraft((prev) => ({
-                    ...prev,
-                    sort_order: Number(e.target.value),
-                  }))
-                }
-                className="rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none"
-              />
-              <button
-                onClick={() => void addStory()}
-                className="rounded-xl bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition hover:bg-white"
-              >
-                Add Story
-              </button>
-            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_220px_120px]">
+            <input
+        placeholder="Story title"
+        value={storyDraft.title}
+        onChange={(e) =>
+            setStoryDraft((prev) => ({ ...prev, title: e.target.value }))
+        }
+      className="rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none"
+    />
 
-            <div className="mt-5 space-y-4">
-              {stories.map((story) => (
-                <div
-                  key={story.id}
-                  className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4"
-                >
-                  <div className="grid gap-3 md:grid-cols-[1fr_120px_120px]">
-                    <input
-                      value={story.title}
-                      onChange={(e) =>
-                        updateStoryLocal(story.id, { title: e.target.value })
-                      }
-                      className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
-                    />
-                    <input
-                      type="number"
-                      value={story.sort_order}
-                      onChange={(e) =>
-                        updateStoryLocal(story.id, {
-                          sort_order: Number(e.target.value),
-                        })
-                      }
-                      className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
-                    />
-                    <label className="flex items-center gap-2 text-sm text-zinc-400">
-                      <input
-                        type="checkbox"
-                        checked={story.is_published}
-                        onChange={(e) =>
-                          updateStoryLocal(story.id, {
-                            is_published: e.target.checked,
-                          })
-                        }
-                      />
-                      Published
-                    </label>
-                  </div>
+    <input
+      placeholder="Story body"
+      value={storyDraft.body}
+      onChange={(e) =>
+        setStoryDraft((prev) => ({ ...prev, body: e.target.value }))
+      }
+      className="rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none"
+    />
 
-                  <textarea
-                    value={story.body}
-                    onChange={(e) =>
-                      updateStoryLocal(story.id, { body: e.target.value })
-                    }
-                    rows={3}
-                    className="mt-3 w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
-                  />
+    <select
+      value={storyDraft.photo_id ?? ""}
+      onChange={(e) =>
+        setStoryDraft((prev) => ({
+          ...prev,
+          photo_id: e.target.value ? Number(e.target.value) : null,
+        }))
+      }
+      className="rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none"
+    >
+      <option value="">No story photo</option>
+      {photos.map((photo) => (
+        <option key={photo.id} value={photo.id}>
+          {photo.caption || photo.original_filename}
+        </option>
+      ))}
+    </select>
 
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() => void saveStory(story)}
-                      className="rounded-xl border border-zinc-700 px-3 py-1.5 text-xs text-zinc-200 transition hover:bg-zinc-800"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => void removeStory(story.id)}
-                      className="rounded-xl border border-red-900 px-3 py-1.5 text-xs text-red-300 transition hover:bg-red-950/40"
-                    >
-                      Delete
-                    </button>
-                  </div>
+    <button
+      onClick={() => void addStory()}
+      className="rounded-xl bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition hover:bg-white"
+    >
+      Add Story
+    </button>
+  </div>
+
+  <div className="mt-5 space-y-4">
+    {stories.map((story) => {
+      const selectedPhoto = photos.find((photo) => photo.id === story.photo_id);
+
+      return (
+        <div
+          key={story.id}
+          className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4"
+        >
+          <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
+            <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
+              {selectedPhoto ? (
+                <img
+                  src={catPhotoUrl(selectedPhoto.public_url)}
+                  alt={
+                    selectedPhoto.alt_text ||
+                    selectedPhoto.caption ||
+                    selectedPhoto.original_filename
+                  }
+                  className="h-44 w-full object-cover"
+                />
+              ) : story.photo_url ? (
+                <img
+                  src={catPhotoUrl(story.photo_url)}
+                  alt={story.photo_alt_text || story.title}
+                  className="h-44 w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-44 items-center justify-center text-sm text-zinc-500">
+                  No story photo
                 </div>
-              ))}
+              )}
+
+              <div className="border-t border-zinc-800 px-3 py-2 text-xs text-zinc-500">
+                Story image preview
+              </div>
             </div>
-          </section>
+
+            <div className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-[1fr_220px_120px_120px]">
+                <input
+                  value={story.title}
+                  onChange={(e) =>
+                    updateStoryLocal(story.id, { title: e.target.value })
+                  }
+                  className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
+                />
+
+                <select
+                  value={story.photo_id ?? ""}
+                  onChange={(e) =>
+                    updateStoryLocal(story.id, {
+                      photo_id: e.target.value ? Number(e.target.value) : null,
+                    })
+                  }
+                  className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
+                >
+                  <option value="">No story photo</option>
+                  {photos.map((photo) => (
+                    <option key={photo.id} value={photo.id}>
+                      {photo.caption || photo.original_filename}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="number"
+                  value={story.sort_order}
+                  onChange={(e) =>
+                    updateStoryLocal(story.id, {
+                      sort_order: Number(e.target.value),
+                    })
+                  }
+                  className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
+                />
+
+                <label className="flex items-center gap-2 text-sm text-zinc-400">
+                  <input
+                    type="checkbox"
+                    checked={story.is_published}
+                    onChange={(e) =>
+                      updateStoryLocal(story.id, {
+                        is_published: e.target.checked,
+                      })
+                    }
+                  />
+                  Published
+                </label>
+              </div>
+
+              <textarea
+                value={story.body}
+                onChange={(e) =>
+                  updateStoryLocal(story.id, { body: e.target.value })
+                }
+                rows={4}
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none"
+              />
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => void saveStory(story)}
+                  className="rounded-xl border border-zinc-700 px-3 py-1.5 text-xs text-zinc-200 transition hover:bg-zinc-800"
+                >
+                  Save
+                </button>
+
+                <button
+                  onClick={() => void removeStory(story.id)}
+                  className="rounded-xl border border-red-900 px-3 py-1.5 text-xs text-red-300 transition hover:bg-red-950/40"
+                >
+                  Delete
+                </button>
+                </div>
+                </div>
+            </div>
+            </div>
+        );
+        })}
+    </div>
+    </section> 
 
           <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
             <h2 className="text-sm font-semibold text-zinc-100">Photo Gallery</h2>
