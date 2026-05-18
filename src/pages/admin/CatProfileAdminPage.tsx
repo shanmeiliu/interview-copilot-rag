@@ -352,6 +352,10 @@ export default function CatProfileAdminPage() {
     {stories.map((story) => {
       const selectedPhoto = photos.find((photo) => photo.id === story.photo_id);
 
+        const selectedPhotoUrl = selectedPhoto
+        ? catPhotoUrl(selectedPhoto.public_url)
+        : catPhotoUrl(story.photo_url);
+
       return (
         <div
           key={story.id}
@@ -359,32 +363,27 @@ export default function CatProfileAdminPage() {
         >
           <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
             <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
-              {selectedPhoto ? (
-                <img
-                  src={catPhotoUrl(selectedPhoto.public_url)}
-                  alt={
-                    selectedPhoto.alt_text ||
-                    selectedPhoto.caption ||
-                    selectedPhoto.original_filename
-                  }
-                  className="h-44 w-full object-cover"
-                />
-              ) : story.photo_url ? (
-                <img
-                  src={catPhotoUrl(story.photo_url)}
-                  alt={story.photo_alt_text || story.title}
-                  className="h-44 w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-44 items-center justify-center text-sm text-zinc-500">
-                  No story photo
-                </div>
-              )}
-
-              <div className="border-t border-zinc-800 px-3 py-2 text-xs text-zinc-500">
-                Story image preview
-              </div>
+          {selectedPhotoUrl ? (
+            <img
+              src={selectedPhotoUrl}
+              alt={
+                selectedPhoto?.alt_text ||
+                selectedPhoto?.caption ||
+                story.photo_alt_text ||
+                story.title
+              }
+              className="h-44 w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-44 items-center justify-center text-sm text-zinc-500">
+              No story photo
             </div>
+          )}
+
+          <div className="border-t border-zinc-800 px-3 py-2 text-xs text-zinc-500">
+            Story image preview
+          </div>
+        </div>
 
             <div className="space-y-3">
               <div className="grid gap-3 md:grid-cols-[1fr_220px_120px_120px]">
