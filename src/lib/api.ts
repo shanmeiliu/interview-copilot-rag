@@ -345,3 +345,45 @@ export async function deleteCatPhoto(id: number) {
     throw new Error(await res.text());
   }
 }
+
+export type MissingQuestion = {
+  id: number;
+  session_id?: string;
+  mode?: string;
+  question: string;
+  rewritten_query?: string;
+  reason: string;
+  filters?: Record<string, unknown>;
+  created_at: string;
+};
+
+export async function listMissingQuestions(limit = 100) {
+  const res = await fetch(apiUrl(`/api/admin/missing-questions?limit=${limit}`), {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return readJsonOrThrow<{ items: MissingQuestion[] }>(res);
+}
+
+export async function deleteMissingQuestion(id: number) {
+  const res = await fetch(apiUrl(`/api/admin/missing-questions/${id}`), {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+}
+
+export async function clearMissingQuestions() {
+  const res = await fetch(apiUrl("/api/admin/missing-questions"), {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+}
