@@ -4,8 +4,6 @@ import { useAuth } from "../../app/auth";
 import { apiUrl, signupRecruiter } from "../../lib/api";
 import AssistantAvatar from "../../components/chat/AssistantAvatar";
 
-
-
 type Mode = "login" | "signup";
 
 function GoogleIcon() {
@@ -37,15 +35,26 @@ function GoogleIcon() {
 }
 
 export default function LoginPage() {
-  const { login, isAuthenticated, getDefaultRoute, user } = useAuth();
+  const {
+    login,
+    verifyMFA,
+    isAuthenticated,
+    getDefaultRoute,
+    user,
+  } = useAuth();
+
   const navigate = useNavigate();
   const location = useLocation();
 
   const requestedFrom = (location.state as { from?: string } | null)?.from;
+
   const [mode, setMode] = useState<Mode>("login");
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [mfaToken, setMfaToken] = useState("");
+  const [mfaCode, setMfaCode] = useState("");
 
   const [signupPassword, setSignupPassword] = useState("");
   const [signupDisplayName, setSignupDisplayName] = useState("");
@@ -57,21 +66,59 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("user after login:", user);
-      navigate(requestedFrom || getDefaultRoute(user), { replace: true });
+      navigate(requestedFrom || getDefaultRoute(user), {
+        replace: true,
+      });
     }
-  }, [isAuthenticated, requestedFrom, getDefaultRoute, navigate, user]);
+  }, [
+    isAuthenticated,
+    requestedFrom,
+    getDefaultRoute,
+    navigate,
+    user,
+  ]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
     setError("");
     setCreatedUsername("");
 
     try {
-      await login(username, password);
+      const result = await login(username, password);
+
+      if ("mfa_required" in result && result.mfa_required) {
+        setMfaToken(result.mfa_token);
+        return;
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleMFAVerify(
+    e: React.FormEvent
+  ) {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await verifyMFA(mfaToken, mfaCode);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "MFA verification failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -79,6 +126,7 @@ export default function LoginPage() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
     setError("");
     setCreatedUsername("");
@@ -94,15 +142,21 @@ export default function LoginPage() {
         setCreatedUsername(data.user.username);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Signup failed"
+      );
     } finally {
       setLoading(false);
     }
   }
 
-function handleGoogleLogin() {
-  window.location.href = apiUrl("/api/auth/google/start");
-}
+  function handleGoogleLogin() {
+    window.location.href = apiUrl(
+      "/api/auth/google/start"
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -121,58 +175,6 @@ function handleGoogleLogin() {
             A recruiter-facing AI representative that answers questions about
             Charmaine’s background, technical experience, projects, and role fit.
           </p>
-
-          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-5 transition hover:border-zinc-700 hover:bg-zinc-900/80">
-              <div className="text-sm font-semibold text-zinc-100">
-                For recruiters and HR
-              </div>
-              <p className="mt-2 text-sm leading-7 text-zinc-400">
-                Ask about backend skills, AI systems, technical projects,
-                architecture decisions, and role fit.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-5 transition hover:border-zinc-700 hover:bg-zinc-900/80">
-              <div className="text-sm font-semibold text-zinc-100">
-                Grounded responses
-              </div>
-              <p className="mt-2 text-sm leading-7 text-zinc-400">
-                Responses are grounded in resume content, GitHub repositories,
-                and curated supporting materials.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-10 max-w-2xl rounded-[30px] border border-zinc-800 bg-zinc-900/50 p-6">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-sm font-semibold text-zinc-100">
-                  Example questions
-                </div>
-                <div className="mt-1 text-sm text-zinc-500">
-                  The kinds of questions this assistant can answer
-                </div>
-              </div>
-              <AssistantAvatar size="md" />
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {[
-                "Can you summarize Charmaine's background?",
-                "What experience does she have with AI systems?",
-                "What are her strongest backend skills?",
-                "Can you explain one of her projects?",
-              ].map((q) => (
-                <div
-                  key={q}
-                  className="rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300 transition-all hover:border-zinc-500 hover:text-white hover:bg-zinc-800 cursor-pointer"
-                >
-                  {q}
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
 
         <section className="fade-in flex items-center justify-center">
@@ -181,72 +183,125 @@ function handleGoogleLogin() {
               <AssistantAvatar size="md" />
               <div>
                 <div className="text-xl font-semibold tracking-tight">
-                  Sign in
+                  {mfaToken
+                    ? "Multi-Factor Authentication"
+                    : "Sign in"}
                 </div>
+
                 <div className="mt-1 text-sm text-zinc-400">
-                  Access Interview Copilot with Google or a local account.
+                  {mfaToken
+                    ? "Enter the 6-digit code from your authenticator app."
+                    : "Access Interview Copilot with Google or a local account."}
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-zinc-950 p-1">
-              <button
-                onClick={() => {
-                  setMode("login");
-                  setError("");
-                  setCreatedUsername("");
-                }}
-                className={`rounded-xl px-4 py-2.5 text-sm transition ${
-                  mode === "login"
-                    ? "bg-white text-black shadow-sm"
-                    : "text-zinc-300 hover:text-white"
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => {
-                  setMode("signup");
-                  setError("");
-                  setCreatedUsername("");
-                }}
-                className={`rounded-xl px-4 py-2.5 text-sm transition ${
-                  mode === "signup"
-                    ? "bg-white text-black shadow-sm"
-                    : "text-zinc-300 hover:text-white"
-                }`}
-              >
-                Create Account
-              </button>
-            </div>
+            {!mfaToken ? (
+              <>
+                <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-zinc-950 p-1">
+                  <button
+                    onClick={() => {
+                      setMode("login");
+                      setError("");
+                      setCreatedUsername("");
+                    }}
+                    className={`rounded-xl px-4 py-2.5 text-sm transition ${
+                      mode === "login"
+                        ? "bg-white text-black shadow-sm"
+                        : "text-zinc-300 hover:text-white"
+                    }`}
+                  >
+                    Sign In
+                  </button>
 
-            <div className="mt-6">
-              <button
-                onClick={handleGoogleLogin}
-                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3.5 text-sm font-medium text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-800"
+                  <button
+                    onClick={() => {
+                      setMode("signup");
+                      setError("");
+                      setCreatedUsername("");
+                    }}
+                    className={`rounded-xl px-4 py-2.5 text-sm transition ${
+                      mode === "signup"
+                        ? "bg-white text-black shadow-sm"
+                        : "text-zinc-300 hover:text-white"
+                    }`}
+                  >
+                    Create Account
+                  </button>
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    onClick={handleGoogleLogin}
+                    className="flex w-full items-center justify-center gap-3 rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3.5 text-sm font-medium text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-800"
+                  >
+                    <GoogleIcon />
+                    <span>Continue with Google</span>
+                  </button>
+                </div>
+
+                <div className="my-6 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-zinc-800" />
+                  <div className="text-xs uppercase tracking-[0.18em] text-zinc-500">
+                    or
+                  </div>
+                  <div className="h-px flex-1 bg-zinc-800" />
+                </div>
+              </>
+            ) : null}
+
+            {mfaToken ? (
+              <form
+                onSubmit={handleMFAVerify}
+                className="mt-6 space-y-4"
               >
-                <GoogleIcon />
-                <span>Continue with Google</span>
-              </button>
-            </div>
+                <div>
+                  <label className="mb-2 block text-sm text-zinc-300">
+                    Authenticator code
+                  </label>
 
-            <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-zinc-800" />
-              <div className="text-xs uppercase tracking-[0.18em] text-zinc-500">
-                or
-              </div>
-              <div className="h-px flex-1 bg-zinc-800" />
-            </div>
+                  <input
+                    value={mfaCode}
+                    onChange={(e) =>
+                      setMfaCode(e.target.value)
+                    }
+                    className="soft-ring w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500"
+                    placeholder="123456"
+                    inputMode="numeric"
+                  />
+                </div>
 
-            {mode === "login" ? (
-              <form onSubmit={handleLogin} className="space-y-4">
+                {error ? (
+                  <div className="rounded-2xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-300">
+                    {error}
+                  </div>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-medium text-black transition hover:opacity-90 disabled:opacity-50"
+                >
+                  {loading
+                    ? "Verifying..."
+                    : "Verify MFA"}
+                </button>
+              </form>
+            ) : mode === "login" ? (
+              <form
+                onSubmit={handleLogin}
+                className="space-y-4"
+              >
                 <div>
                   <label className="mb-2 block text-sm text-zinc-300">
                     Username
                   </label>
+
                   <input
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) =>
+                      setUsername(e.target.value)
+                    }
                     className="soft-ring w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500"
                     placeholder="admin or recruiter-xxxxx"
                   />
@@ -256,9 +311,12 @@ function handleGoogleLogin() {
                   <label className="mb-2 block text-sm text-zinc-300">
                     Password
                   </label>
+
                   <input
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) =>
+                      setPassword(e.target.value)
+                    }
                     type="password"
                     className="soft-ring w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500"
                     placeholder="••••••••"
@@ -276,18 +334,28 @@ function handleGoogleLogin() {
                   disabled={loading}
                   className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-medium text-black transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {loading ? "Signing in..." : "Sign in with password"}
+                  {loading
+                    ? "Signing in..."
+                    : "Sign in with password"}
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleSignup} className="space-y-4">
+              <form
+                onSubmit={handleSignup}
+                className="space-y-4"
+              >
                 <div>
                   <label className="mb-2 block text-sm text-zinc-300">
                     Display Name
                   </label>
+
                   <input
                     value={signupDisplayName}
-                    onChange={(e) => setSignupDisplayName(e.target.value)}
+                    onChange={(e) =>
+                      setSignupDisplayName(
+                        e.target.value
+                      )
+                    }
                     className="soft-ring w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500"
                     placeholder="Recruiter Name"
                   />
@@ -297,9 +365,12 @@ function handleGoogleLogin() {
                   <label className="mb-2 block text-sm text-zinc-300">
                     Email
                   </label>
+
                   <input
                     value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
+                    onChange={(e) =>
+                      setSignupEmail(e.target.value)
+                    }
                     type="email"
                     className="soft-ring w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500"
                     placeholder="optional@example.com"
@@ -310,9 +381,14 @@ function handleGoogleLogin() {
                   <label className="mb-2 block text-sm text-zinc-300">
                     Password
                   </label>
+
                   <input
                     value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
+                    onChange={(e) =>
+                      setSignupPassword(
+                        e.target.value
+                      )
+                    }
                     type="password"
                     className="soft-ring w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500"
                     placeholder="At least 8 characters"
@@ -322,7 +398,9 @@ function handleGoogleLogin() {
                 {createdUsername ? (
                   <div className="rounded-2xl border border-emerald-900 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-300">
                     Account created. Your username is{" "}
-                    <span className="font-semibold">{createdUsername}</span>.
+                    <span className="font-semibold">
+                      {createdUsername}
+                    </span>.
                     You are now signed in.
                   </div>
                 ) : null}
@@ -338,7 +416,9 @@ function handleGoogleLogin() {
                   disabled={loading}
                   className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-medium text-black transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {loading ? "Creating account..." : "Create local account"}
+                  {loading
+                    ? "Creating account..."
+                    : "Create local account"}
                 </button>
               </form>
             )}

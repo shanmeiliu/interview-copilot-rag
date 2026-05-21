@@ -387,3 +387,39 @@ export async function clearMissingQuestions() {
     throw new Error(await res.text());
   }
 }
+
+export async function setupMFA() {
+  const res = await fetch(apiUrl("/api/admin/mfa/setup"), {
+    method: "POST",
+    credentials: "include",
+  });
+
+  return readJsonOrThrow<{
+    secret: string;
+    otpauth_url: string;
+  }>(res);
+}
+
+export async function confirmMFA(code: string) {
+  const res = await fetch(apiUrl("/api/admin/mfa/confirm"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ code }),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+}
+
+export async function disableMFA() {
+  const res = await fetch(apiUrl("/api/admin/mfa/disable"), {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+}
