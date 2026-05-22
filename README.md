@@ -360,21 +360,6 @@ docker compose build --no-cache frontend
 
 ---
 
-# Backend Repository
-
-Backend repository:
-
-:contentReference[oaicite:0]{index=0}
-
----
-
-# Frontend Repository
-
-Frontend repository:
-
-:contentReference[oaicite:1]{index=1}
-
----
 
 # React + Vite Reference
 
@@ -385,10 +370,6 @@ Official plugins:
 - `@vitejs/plugin-react`
 - `@vitejs/plugin-react-swc`
 
-Reference:
-
-- Vite: :contentReference[oaicite:2]{index=2}
-- React: :contentReference[oaicite:3]{index=3}
 
 ---
 
