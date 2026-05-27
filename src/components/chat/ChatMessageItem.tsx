@@ -6,8 +6,22 @@ type Props = {
   message: ChatMessage;
 };
 
+function WorkingIndicator() {
+  return (
+    <div className="flex items-center gap-3 text-sm text-zinc-300">
+      <div className="flex gap-1">
+        <span className="h-2 w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.2s]" />
+        <span className="h-2 w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.1s]" />
+        <span className="h-2 w-2 animate-bounce rounded-full bg-zinc-400" />
+      </div>
+      <span>Charmaine Cat is searching and thinking...</span>
+    </div>
+  );
+}
+
 export default function ChatMessageItem({ message }: Props) {
   const isUser = message.role === "user";
+  const isAssistantWorking = !isUser && message.content.trim() === "";
 
   if (isUser) {
     return (
@@ -50,7 +64,7 @@ export default function ChatMessageItem({ message }: Props) {
         </div>
 
         <div className="glass-panel soft-border rounded-[26px] rounded-tl-md px-5 py-4 text-sm leading-7 text-zinc-100 shadow-2xl shadow-black/10">
-          {message.content}
+          {isAssistantWorking ? <WorkingIndicator /> : message.content}
         </div>
       </div>
     </div>

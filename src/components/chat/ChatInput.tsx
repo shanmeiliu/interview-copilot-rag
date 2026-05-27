@@ -10,7 +10,8 @@ export default function ChatInput({ onSend, disabled }: Props) {
 
   async function handleSend() {
     const text = value.trim();
-    if (!text) return;
+    if (!text || disabled) return;
+
     setValue("");
     await onSend(text);
   }
@@ -18,26 +19,43 @@ export default function ChatInput({ onSend, disabled }: Props) {
   return (
     <div className="border-t border-white/5 px-4 py-5 md:px-6">
       <div className="mx-auto max-w-4xl">
-        <div className="glass-panel soft-border overflow-hidden rounded-[30px] shadow-2xl shadow-black/10">
+        <div
+          className={`glass-panel soft-border overflow-hidden rounded-[30px] shadow-2xl shadow-black/10 transition ${
+            disabled ? "opacity-80 ring-1 ring-emerald-900/40" : ""
+          }`}
+        >
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Ask Charmaine Cat a recruiter or interview question..."
-            className="min-h-[110px] w-full resize-none bg-transparent px-5 py-4 text-sm leading-7 text-zinc-100 outline-none placeholder:text-zinc-500"
+            placeholder={
+              disabled
+                ? "Charmaine Cat is working on your answer..."
+                : "Ask Charmaine Cat a recruiter or interview question..."
+            }
+            className="min-h-[110px] w-full resize-none bg-transparent px-5 py-4 text-sm leading-7 text-zinc-100 outline-none placeholder:text-zinc-500 disabled:cursor-wait"
             disabled={disabled}
           />
 
           <div className="flex items-center justify-between border-t border-white/5 px-4 py-3">
             <div className="text-xs text-zinc-500">
-              Grounded in resume, GitHub projects, and supporting materials
+              {disabled
+                ? "Working... retrieving context and waiting for the LLM"
+                : "Grounded in resume, GitHub projects, and supporting materials"}
             </div>
 
             <button
               onClick={handleSend}
-              disabled={disabled}
-              className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:opacity-50"
+              disabled={disabled || !value.trim()}
+              className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
             >
-              Send
+              {disabled ? (
+                <>
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-black/30 border-t-black" />
+                  Working
+                </>
+              ) : (
+                "Send"
+              )}
             </button>
           </div>
         </div>
