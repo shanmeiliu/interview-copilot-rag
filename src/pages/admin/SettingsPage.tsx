@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../app/auth";
+import { QRCodeSVG } from "qrcode.react";
 import PageHeader from "../../components/common/PageHeader";
 import { confirmMFA, disableMFA, setupMFA } from "../../lib/api";
 
@@ -172,8 +173,17 @@ export default function SettingsPage() {
               </ol>
 
               <div className="mt-4 space-y-3">
-                <label className="block text-sm text-zinc-400">
-                  Secret
+
+                    {otpauthUrl ? (
+                      <div className="mb-5 flex justify-center">
+                        <div className="rounded-2xl border border-zinc-800 bg-white p-4 shadow-lg">
+                          <QRCodeSVG value={otpauthUrl} size={180} />
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <label className="block text-sm text-zinc-400">
+                      Secret
                   <input
                     value={secret}
                     readOnly
