@@ -10,6 +10,7 @@ import IngestionPage from "./pages/admin/IngestionPage";
 import UsersPage from "./pages/admin/UsersPage";
 import SettingsPage from "./pages/admin/SettingsPage";
 import CatProfileAdminPage from "./pages/admin/CatProfileAdminPage";
+import InterviewPrepKnowledgePage from "./pages/admin/InterviewPrepKnowledgePage";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
       <Route element={<ProtectedRoute requireRole="admin" />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/knowledge" replace />} />
+          <Route path="interview-prep" element={<InterviewPrepKnowledgePage />} />
           <Route path="knowledge" element={<KnowledgePage />} />
           <Route path="missing-questions" element={<MissingQuestionsPage />} />
           <Route path="cat-profile" element={<CatProfileAdminPage />} />

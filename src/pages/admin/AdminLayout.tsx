@@ -5,6 +5,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: "/admin/knowledge", label: "Knowledge" },
+    { to: "/admin/interview-prep", label: "Interview Prep KB" },
     { to: "/admin/missing-questions", label: "Missing Questions" },
     { to: "/admin/cat-profile", label: "Charmaine Cat" },
     { to: "/admin/ingestion", label: "Ingestion" },

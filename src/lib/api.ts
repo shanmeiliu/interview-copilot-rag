@@ -122,10 +122,18 @@ export async function deleteSource(id: number) {
   }
 }
 
-export async function uploadSourceFile(file: File, sourceType = "document") {
+export async function uploadSourceFile(
+  file: File,
+  sourceType = "document",
+  sourceGroup?: string
+) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("source_type", sourceType);
+
+  if (sourceGroup) {
+    formData.append("source_group", sourceGroup);
+  }
 
   const res = await fetch(apiUrl("/api/sources/upload"), {
     method: "POST",
@@ -141,6 +149,7 @@ export async function ingestGithubRepo(body: {
   branch?: string;
   include_patterns?: string[];
   source_type?: string;
+  source_group?: string;
 }) {
   const res = await fetch(apiUrl("/api/sources/github"), {
     method: "POST",
