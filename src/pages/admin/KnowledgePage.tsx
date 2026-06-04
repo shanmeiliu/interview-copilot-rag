@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageHeader from "../../components/common/PageHeader";
 import FileUploadCard from "../../components/knowledge/FileUploadCard";
 import GithubRepoCard from "../../components/knowledge/GithubRepoCard";
@@ -23,6 +23,12 @@ export default function KnowledgePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  const recruiterSources = useMemo(() => {
+    return sources.filter(
+      (source) => source.metadata?.source_group !== "interview_prep"
+    );
+  }, [sources]);
 
   async function loadSources() {
     try {
@@ -70,8 +76,8 @@ export default function KnowledgePage() {
   return (
     <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
       <PageHeader
-        title="Knowledge Base"
-        description="Manage private sources used by the recruiter-facing assistant."
+        title="Recruiter Knowledge Base"
+        description="Manage recruiter-facing profile knowledge such as resumes, projects, work history, and recruiter Q&A."
       />
 
       <div className="p-6">
@@ -94,14 +100,16 @@ export default function KnowledgePage() {
               await loadSources();
             }}
           />
+
           <GithubRepoCard
             onSuccess={async () => {
               setMessage("GitHub source added.");
               await loadSources();
             }}
           />
+
           <SourceList
-            items={sources}
+            items={recruiterSources}
             loading={loading}
             error={error}
             onSync={handleSync}
