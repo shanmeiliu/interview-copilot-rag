@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import VersionBadge from "../../components/common/VersionBadge";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -14,29 +15,35 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-zinc-950 text-zinc-100">
-      <aside className="w-64 border-r border-zinc-800 bg-zinc-900 p-6">
-        <div className="mb-8 text-lg font-semibold tracking-tight">
-          🧠 Admin Panel
+      <aside className="flex w-64 flex-col border-r border-zinc-800 bg-zinc-900 p-6">
+        <div>
+          <div className="mb-8 text-lg font-semibold tracking-tight">
+            🧠 Admin Panel
+          </div>
+
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  [
+                    "rounded-xl px-3 py-2 text-sm transition",
+                    isActive
+                      ? "bg-zinc-800 text-white"
+                      : "text-zinc-400 hover:bg-zinc-800 hover:text-white",
+                  ].join(" ")
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
         </div>
 
-        <nav className="flex flex-col gap-2">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                [
-                  "rounded-xl px-3 py-2 text-sm transition",
-                  isActive
-                    ? "bg-zinc-800 text-white"
-                    : "text-zinc-400 hover:bg-zinc-800 hover:text-white",
-                ].join(" ")
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+        <div className="mt-auto border-t border-zinc-800 pt-4">
+          <VersionBadge />
+        </div>
       </aside>
 
       <main className="flex-1">

@@ -12,6 +12,14 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+
+ARG APP_VERSION=0.1.0
+ARG GIT_COMMIT=unknown
+ARG BUILD_TIME=unknown
+
+ENV APP_VERSION=${APP_VERSION}
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_TIME=${BUILD_TIME}
 RUN npm run build
 
 FROM nginx:1.27-alpine

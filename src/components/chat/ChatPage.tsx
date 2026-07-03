@@ -3,6 +3,7 @@ import PageHeader from "../common/PageHeader";
 import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
 import ModeSelector from "./ModeSelector";
+import VersionBadge from "../common/VersionBadge";
 import SourceSelector from "./SourceSelector";
 import RetrievedSourcesPanel from "./RetrievedSourcesPanel";
 import { sendChat, streamChat } from "../../lib/api";
@@ -122,7 +123,13 @@ export default function ChatPage() {
         </div>
 
         <ChatMessageList messages={messages} />
-        <ChatInput onSend={handleSend} disabled={loading} />
+       
+
+<ChatInput onSend={handleSend} disabled={loading} />
+
+<footer className="border-t border-zinc-800 px-6 py-2">
+  <VersionBadge />
+</footer>
       </div>
 
       <RetrievedSourcesPanel docs={docs} />

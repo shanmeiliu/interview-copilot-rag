@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .npmrc
 .env
+.env.production.local
+.env.local
