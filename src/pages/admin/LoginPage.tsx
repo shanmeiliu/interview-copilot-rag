@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../app/auth";
 import { apiUrl, signupRecruiter } from "../../lib/api";
 import AssistantAvatar from "../../components/chat/AssistantAvatar";
-
+import VersionBadge from "../../components/common/VersionBadge";
 type Mode = "login" | "signup";
 
 function GoogleIcon() {
@@ -429,6 +429,9 @@ export default function LoginPage() {
             </div>
           </div>
         </section>
+      </div>
+       <div className="fixed bottom-4 left-4">
+        <VersionBadge />
       </div>
     </div>
   );
